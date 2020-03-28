@@ -206,7 +206,7 @@ client = boto3.client('s3')
 
 
 response = client.put_object(
-  Bucket='sdd-s3-basebucket',
+  Bucket='sdd-s3-bucket',
   Body=json.dumps(data_json),
   Key='fahrrad/{}/{}.json'.format(yesterday_date.strftime('%Y/%m/%d'),str(yesterday_date).split()[0])
 )

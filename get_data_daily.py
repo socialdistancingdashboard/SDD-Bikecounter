@@ -91,7 +91,7 @@ def create_request():
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36",
             "X-Requested-With": "XMLHttpRequest"
         }
-        bike_count_data = requests.post(url, body, headers=headers)
+        bike_count_data = requests.post(url, body, headers=headers, verify=False)
         #no data available for location on current day
         if not bike_count_data.json()[:-1]:
             continue

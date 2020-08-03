@@ -86,8 +86,8 @@ def create_request():
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             "Cookie": "i18next=en_US; _ga=GA1.2.1682226698.1584790632; _gid=GA1.2.220973166.1584790632",
             "Host": "data.eco-counter.com",
-            "Origin": "https://data.eco-counter.com",
-            "Referer": "https://data.eco-counter.com/ParcPublic/?id=4586",
+            "Origin": "http://data.eco-counter.com",
+            "Referer": "http://data.eco-counter.com/ParcPublic/?id=4586",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36",
             "X-Requested-With": "XMLHttpRequest"
         }

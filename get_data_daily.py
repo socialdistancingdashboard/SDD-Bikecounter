@@ -10,6 +10,7 @@ import numpy as np
 import boto3
 import requests
 import os
+import certifi
 from datetime import datetime, timedelta
 
 

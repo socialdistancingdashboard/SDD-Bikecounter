@@ -64,7 +64,7 @@ def create_request():
     WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
     for index, row in locations_df.iterrows():
         #print('index', index)
-        url = 'https://data.eco-counter.com/ParcPublic/CounterData'
+        url = 'http://data.eco-counter.com/ParcPublic/CounterData'
 
         yesterday_day, yesterday_month, yesterday_year = yesterday_date.day, yesterday_date.month, yesterday_date.year
         today_day, today_month, today_year = today_date.day, today_date.month, today_date.year

@@ -11,6 +11,8 @@ import boto3
 import requests
 import os
 from datetime import datetime, timedelta
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 # In[37]:

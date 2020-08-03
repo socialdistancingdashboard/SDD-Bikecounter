@@ -4,4 +4,3 @@ holidays
 geopy
 statsmodels
 matplotlib
-certifi

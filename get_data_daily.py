@@ -64,7 +64,7 @@ def create_request():
     WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
     for index, row in locations_df.iterrows():
         #print('index', index)
-        url = 'https://www.eco-public.com/ParcPublic/CounterData'
+        url = 'http://www.eco-public.com/ParcPublic/CounterData'
 
         yesterday_day, yesterday_month, yesterday_year = yesterday_date.day, yesterday_date.month, yesterday_date.year
         today_day, today_month, today_year = today_date.day, today_date.month, today_date.year
@@ -78,18 +78,15 @@ def create_request():
         body = "idOrganisme=4586&idPdc={}&fin={}%2F{}%2F{}&debut={}%2F{}%2F{}&interval=4&pratiques={}".format(row.idPdc, today_day, today_month, today_year, yesterday_day, yesterday_month, yesterday_year, pratiques)
 
         headers = {
-            "Accept": "text/plain, */*; q=0.01",
-            "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Connection": "keep-alive",
-            "Content-Length": "115",
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Cookie": "i18next=en_US; _ga=GA1.2.1682226698.1584790632; _gid=GA1.2.220973166.1584790632",
-            "Host": "data.eco-counter.com",
-            "Origin": "https://www.eco-public.com",
-            "Referer": "https://www.eco-public.com/ParcPublic/?id=4586",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36",
-            "X-Requested-With": "XMLHttpRequest"
+            "Connection: keep-alive",
+            "Accept: text/plain, */*; q=0.01",
+            "X-Requested-With: XMLHttpRequest",
+            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36",
+            "Content-Type: application/x-www-form-urlencoded; charset=UTF-8",
+            "Origin: http://www.eco-public.com",
+            "Referer: http://www.eco-public.com/ParcPublic/?id=888",
+            "Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Cookie: _ga=GA1.2.2013016792.1596553969; _gid=GA1.2.2020073222.1596553969"
         }
         bike_count_data = requests.post(url, body, headers=headers, verify=False)
         #no data available for location on current day

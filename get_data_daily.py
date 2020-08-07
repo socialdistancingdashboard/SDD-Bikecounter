@@ -204,7 +204,7 @@ client = boto3.client('s3')
 
 # In[57]:
 
-
+print(data_json)
 response = client.put_object(
   Bucket='sdd-s3-bucket',
   Body=json.dumps(data_json),

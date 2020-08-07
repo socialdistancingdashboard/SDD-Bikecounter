@@ -90,7 +90,7 @@ def create_request():
         }
         bike_count_data = requests.post(url, body, headers=headers, verify=False)
         #no data available for location on current day
-        print(bike_count_data)
+        print(bike_count_data.json())
         if not bike_count_data.json()[:-1]:
             continue
         bike_count_data_entry = bike_count_data.json()[:-1][0]

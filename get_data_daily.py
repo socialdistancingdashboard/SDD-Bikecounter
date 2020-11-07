@@ -7,8 +7,6 @@ import boto3
 import requests
 from datetime import datetime, timedelta
 import ssl
-from geopy.geocoders import Nominatim
-import holidays
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -78,28 +76,11 @@ def get_data(start_date):
         # -------------------------------------------------
         # end get bike count data
 
-        # start get public holiday data
-        # -------------------------------------------------
-        province_public_holidays = []
-        geolocator = Nominatim(user_agent="everyonecounts")
-        location = geolocator.reverse(str(row['lat']) + "," + str(row['lon']))
-        # when city=province, state is not returned
-        if 'state' in location.raw['address']:
-            province = location.raw['address']['state']
-        else:
-            province = location.raw['address']['city']
-        province_abb = province_abbs[province]
-        for date in holidays.DE(years=[start_year], prov=province_abb):
-            province_public_holidays.append(str(date))
-        # end get public holiday data
-        # -------------------------------------------------
-
         data_set = {'date': str(start_date).split()[0],
                     'bike_count': str(bike_count_data_entry[1]),
                     'name': row['nom'],
                     'lon': row['lon'],
-                    'lat': row['lat'],
-                    'is_holiday': 1 if str(start_date).split()[0] in province_public_holidays else 0
+                    'lat': row['lat']
                     }
         data_sets.append(data_set)
     return pd.DataFrame(data_sets).fillna(0).to_json(orient='records')

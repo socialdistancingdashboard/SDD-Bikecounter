@@ -98,29 +98,6 @@ def create_request():
         #end get bike count data
 
 
-        #start get weather data
-        #-------------------------------------------------
-        weather_stations = requests.get(
-            'https://api.meteostat.net/v1/stations/nearby?lat={}&lon={}&limit=20&key={}'.format(row.lat,
-                                                                                                row.lon,
-                                                                                                WEATHER_API_KEY))
-        #loop over next stations if current station has no data for current day
-        for station in weather_stations.json()['data']:
-            #print('station_tried', station)
-            closest_station = station['id']
-            weather_data = requests.get(
-                'https://api.meteostat.net/v1/history/daily?station={}&start={}&end={}&key={}'.format(closest_station,
-                                                                                                      str(yesterday_date).split()[0],
-                                                                                                      str(yesterday_date).split()[0],
-                                                                                                      WEATHER_API_KEY
-                                                                                                     ))
-            #exit loop if current station already has data for current day
-            if weather_data.json()['data'] and (weather_data.json()['data'][-1]['date'] == str(yesterday_date).split()[0]):
-                break
-        weather_data_entry = weather_data.json()['data'][0]
-        #--------------------------------------------------
-        #end get weather data
-
 
         #start get public holiday data
         #-------------------------------------------------
@@ -144,30 +121,7 @@ def create_request():
         data_set['name']= row['nom']
         data_set['lon']=row['lon']
         data_set['lat']=row['lat']
-        data_set['temperature']= weather_data_entry['temperature']
-        data_set['precipitation']= weather_data_entry['precipitation']
-        data_set['snowdepth']= weather_data_entry['snowdepth']
-        data_set['windspeed']= weather_data_entry['windspeed']
-        data_set['sunshine']= weather_data_entry['sunshine']
         data_set['is_holiday']= 1 if str(yesterday_date).split()[0] in province_public_holidays else 0
-
-
-        #start get prediction for normal bike count
-        #-------------------------------------------------
-        prediction = BP.predict_single(
-            station_string=row['nom'],
-            day=yesterday_date,
-            temperature=data_set['temperature'] or 0,
-            precipitation=data_set['precipitation'] or 0,
-            snowdepth=data_set['snowdepth'] or 0,
-            windspeed=data_set['windspeed'] or 0,
-            sunshine=data_set['sunshine'] or 0,
-            is_holiday=data_set['is_holiday'] or 0
-        )
-        #end get prediction for normal bike count
-        #-------------------------------------------------
-        #predict 0 if prediction -ve
-        data_set['prediction'] = max(prediction,0)
         data_sets.append(data_set)
     return data_sets
 

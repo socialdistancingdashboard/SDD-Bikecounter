@@ -7,7 +7,6 @@ phases:
     commands:
       - echo Entered the install phase...
       - apt-get update -y
-      - export WEATHER_API_KEY="L8ouyjgU"
     finally:
       - echo This always runs even if the update or install command fails
 
@@ -23,15 +22,12 @@ phases:
     commands:
       - echo BEGIN BUILD PHASE
       - python get_data_daily.py
-      -
     finally:
       - echo END BUILD PHASE
 
   post_build:
     commands:
       - echo BEGIN POST_BUILD PHASE
-      -
-
     finally:
       - echo END POST_BUILD PHASE
 

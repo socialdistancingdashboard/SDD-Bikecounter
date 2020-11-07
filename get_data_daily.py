@@ -12,11 +12,6 @@ import holidays
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-pratiques_path = "pratiques.csv"
-locations_path = "Counterlist-DE.csv"
-pratiques_df = pd.read_csv(pratiques_path, sep='\t')
-locations_df = pd.read_csv(locations_path, sep='\t')
-
 province_abbs = {
     'Baden-Württemberg': 'BW',
     'Bayern': 'BY',
@@ -36,17 +31,18 @@ province_abbs = {
     'Thüringen': 'TH'
 }
 
-today_date = datetime.today()
-yesterday_date = today_date - timedelta(1)
 
-
-def create_request():
+def get_data(start_date):
+    locations_path = "Counterlist-DE.csv"
+    locations_df = pd.read_csv(locations_path, sep='\t')
     data_sets = []
+
+    end_date = start_date + timedelta(days=1)
+    start_day, start_month, start_year = start_date.day, start_date.month, start_date.year
+    end_day, end_month, end_year = end_date.day, end_date.month, end_date.year
+
     for index, row in locations_df.iterrows():
         url = 'http://www.eco-public.com/ParcPublic/CounterData'
-
-        yesterday_day, yesterday_month, yesterday_year = yesterday_date.day, yesterday_date.month, yesterday_date.year
-        today_day, today_month, today_year = today_date.day, today_date.month, today_date.year
 
         # start get bike count data
         # ------------------------------------------------
@@ -54,12 +50,12 @@ def create_request():
         if hasattr(row, 'pratiques'):
             pratiques = "&pratiques=" + row.pratiques
         body = "idOrganisme=4586&idPdc={}&fin={}%2F{}%2F{}&debut={}%2F{}%2F{}&interval=4&pratiques={}".format(row.idPdc,
-                                                                                                              today_day,
-                                                                                                              today_month,
-                                                                                                              today_year,
-                                                                                                              yesterday_day,
-                                                                                                              yesterday_month,
-                                                                                                              yesterday_year,
+                                                                                                              end_day,
+                                                                                                              end_month,
+                                                                                                              end_year,
+                                                                                                              start_day,
+                                                                                                              start_month,
+                                                                                                              start_year,
                                                                                                               pratiques)
 
         headers = {
@@ -93,35 +89,34 @@ def create_request():
         else:
             province = location.raw['address']['city']
         province_abb = province_abbs[province]
-        for date in holidays.DE(years=[yesterday_date.year], prov=province_abb):
+        for date in holidays.DE(years=[start_year], prov=province_abb):
             province_public_holidays.append(str(date))
         # end get public holiday data
         # -------------------------------------------------
 
-        data_set = {}
-        data_set['date'] = str(yesterday_date).split()[0]
-        data_set['bike_count'] = str(bike_count_data_entry[1])
-        data_set['name'] = row['nom']
-        data_set['lon'] = row['lon']
-        data_set['lat'] = row['lat']
-        data_set['is_holiday'] = 1 if str(yesterday_date).split()[0] in province_public_holidays else 0
+        data_set = {'date': str(start_date).split()[0],
+                    'bike_count': str(bike_count_data_entry[1]),
+                    'name': row['nom'],
+                    'lon': row['lon'],
+                    'lat': row['lat'],
+                    'is_holiday': 1 if str(start_date).split()[0] in province_public_holidays else 0
+                    }
         data_sets.append(data_set)
-    return data_sets
+    return pd.DataFrame(data_sets).fillna(0).to_json(orient='records')
 
 
-data = create_request()
+def write_data_to_s3(datajson, date):
+    client = boto3.client('s3')
+    response = client.put_object(
+        Bucket='sdd-s3-bucket',
+        Body=json.dumps(datajson),
+        Key='fahrrad/{}/{}.json'.format(date.strftime('%Y/%m/%d'), str(date).split()[0])
+    )
+    return response
 
-df = pd.DataFrame(data=data)
 
-df1 = df.fillna(0)
-
-data_json = df1.to_json(orient='records')
-
-client = boto3.client('s3')
-
-print(data_json)
-response = client.put_object(
-    Bucket='sdd-s3-bucket',
-    Body=json.dumps(data_json),
-    Key='fahrrad/{}/{}.json'.format(yesterday_date.strftime('%Y/%m/%d'), str(yesterday_date).split()[0])
-)
+if __name__ == '__main__':
+    yesterday_date = datetime.today() - timedelta(1)
+    data_json = get_data(yesterday_date)
+    write_data_to_s3(data_json, yesterday_date)
+    print(data_json)

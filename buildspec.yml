@@ -13,6 +13,7 @@ phases:
   pre_build:
     commands:
       - echo BEGIN PRE_BUILD PHASE
+      - python -m pip install --upgrade pip
       - pip install -r requirements.txt
       - pip install --upgrade certifi
     finally:

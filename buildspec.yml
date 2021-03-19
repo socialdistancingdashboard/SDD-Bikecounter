@@ -14,6 +14,7 @@ phases:
     commands:
       - echo BEGIN PRE_BUILD PHASE
       - python -m pip install --upgrade pip
+      - pip3 install awscli --upgrade --user
       - pip install -r requirements.txt
       - pip install --upgrade certifi
     finally:
